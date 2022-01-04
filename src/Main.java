@@ -12,12 +12,10 @@ public class Main {
         saveGame("D:/games/savegames/save3.dat", progress3);
 
         File dir = new File("D:/games/savegames");
-        File[] filesList = new File[3];
+        File[] filesList = new File[0];
         if (dir.isDirectory()) {
             filesList = dir.listFiles();
         }
-
-        System.out.println(filesList.toString());
 
         zipFiles("D:/games/savegames/save.zip", filesList);
 
@@ -33,17 +31,29 @@ public class Main {
     }
 
     private static void zipFiles(String path, File[] list) {
-        for (File item : list) {
-            try (ZipOutputStream zout = new ZipOutputStream(new
-                    FileOutputStream(path));
-                 FileInputStream fis = new FileInputStream(item.getPath())) {
-                ZipEntry entry = new ZipEntry(item.getPath());
-                zout.putNextEntry(entry);
-                byte[] buffer = new byte[fis.available()];
-                fis.read(buffer);
-                zout.write(buffer);
-                zout.closeEntry();
-            } catch (Exception ex) {
+        ZipOutputStream zout = null;
+        try {
+            zout = new ZipOutputStream(new FileOutputStream(path));
+            for (File item : list) {
+                try (FileInputStream fis = new FileInputStream(item.getPath())) {
+                    ZipEntry entry = new ZipEntry(item.getName());
+                    zout.putNextEntry(entry);
+                    byte[] buffer = new byte[fis.available()];
+                    fis.read(buffer);
+                    zout.write(buffer);
+                    zout.closeEntry();
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (zout != null) {
+                    zout.close();
+                }
+            } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
         }
