@@ -45,6 +45,7 @@ public class Main {
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }
+                item.delete();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
